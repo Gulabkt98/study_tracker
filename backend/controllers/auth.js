@@ -48,7 +48,7 @@ const register = async (req, res)=>{
             success:true,
             message:"successfully registered ",
             user:{
-                userId:user._id,
+                id:user._id,
                 name:user.name,
                 email:user.email,
 
