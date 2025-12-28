@@ -16,9 +16,11 @@ app.use(cookieParser());       // parse cookies
 
 ///auth routes  
 const authRoute = require("./routes/authRoutes");
+const studyRoute = require("./routes/StudyRoutes");
 
 //routes mountesss
 app.use("/api/v1/auth",authRoute);
+app.use("/api/v1/study",studyRoute);
 
 app.get('/', (req, res) => {
   res.send("API running");
