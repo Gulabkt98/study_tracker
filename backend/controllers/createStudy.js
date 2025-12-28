@@ -1,6 +1,7 @@
 const User= require("../models/User");
 const Study = require("../models/Study");
 
+
 const createStudy = async (req, res)=>{
     try{
        const {title ,description , subject ,status } = req.body;
@@ -42,5 +43,31 @@ const createStudy = async (req, res)=>{
 
     }
 }
+
+const getstudies = async(req,res)=>{
+    try{
+         
+        const userId =  req.user._id;
+        const studies = await Study.find({userId}).sort({createdAt :-1});
+         
+        return res.status(200).json({
+            success:true,
+            message:"all studies data feteched successfully",
+            count:studies.length,
+            studies,
+        })
+        
+
+
+    }
+    catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"internal server error",
+            error:err.message,
+        })
+
+    }
+}
  
-module.exports = { createStudy };
+module.exports = { createStudy,getstudies };
