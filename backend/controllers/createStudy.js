@@ -48,7 +48,10 @@ const getstudies = async(req,res)=>{
     try{
          
         const userId =  req.user._id;
-        const studies = await Study.find({userId}).sort({createdAt :-1});
+        const studies = await Study.find({ user: req.user._id });
+        console.log("CREATE USER:", req.user._id.toString());
+
+
          
         return res.status(200).json({
             success:true,
