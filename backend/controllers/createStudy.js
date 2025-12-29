@@ -44,34 +44,36 @@ const createStudy = async (req, res)=>{
     }
 }
 
-const getstudies = async(req,res)=>{
-    try{
-         
-        const userId =  req.user._id;
-        const studies = await Study.find({ user: req.user._id });
-        console.log("CREATE USER:", req.user._id.toString());
+const getstudies = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { status } = req.query;
 
+    let filter = { user: userId };
 
-         
-        return res.status(200).json({
-            success:true,
-            message:"all studies data feteched successfully",
-            count:studies.length,
-            studies,
-        })
-        
-
-
+    // add status filter only if provided
+    if (status) {
+      filter.status = status;
     }
-    catch(err){
-        return res.status(500).json({
-            success:false,
-            message:"internal server error",
-            error:err.message,
-        })
 
-    }
-}
+    const studies = await Study.find(filter)
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      message: "Studies fetched successfully",
+      count: studies.length,
+      studies,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
+
 
 const deletestudies=async(req,res)=>{
 
