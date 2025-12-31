@@ -47,32 +47,38 @@ const createStudy = async (req, res)=>{
 const getstudies = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { status } = req.query;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+
+    const skip = (page - 1) * limit;
 
     let filter = { user: userId };
 
-    // add status filter only if provided
-    if (status) {
-      filter.status = status;
+    if (req.query.status) {
+      filter.status = req.query.status;
     }
 
     const studies = await Study.find(filter)
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-    return res.status(200).json({
+    const totalStudies = await Study.countDocuments(filter);
+
+    res.status(200).json({
       success: true,
-      message: "Studies fetched successfully",
-      count: studies.length,
+      totalStudies,
+      currentPage: page,
+      totalPages: Math.ceil(totalStudies / limit),
+      studiesOnPage: studies.length,
       studies,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: err.message,
-    });
+    res.status(500).json({ success: false });
   }
 };
+
 
 
 const deletestudies=async(req,res)=>{
