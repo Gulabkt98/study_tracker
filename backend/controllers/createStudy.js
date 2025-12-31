@@ -50,13 +50,19 @@ const getstudies = async (req, res) => {
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
-
     const skip = (page - 1) * limit;
 
     let filter = { user: userId };
 
     if (req.query.status) {
       filter.status = req.query.status;
+    }
+
+    if (req.query.search) {
+      filter.title = {
+        $regex: req.query.search,
+        $options: "i",
+      };
     }
 
     const studies = await Study.find(filter)
@@ -66,7 +72,7 @@ const getstudies = async (req, res) => {
 
     const totalStudies = await Study.countDocuments(filter);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       totalStudies,
       currentPage: page,
@@ -75,10 +81,13 @@ const getstudies = async (req, res) => {
       studies,
     });
   } catch (err) {
-    res.status(500).json({ success: false });
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err.message,
+    });
   }
 };
-
 
 
 const deletestudies=async(req,res)=>{
